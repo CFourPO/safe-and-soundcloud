@@ -1,0 +1,15 @@
+{% extends "savesounds/__base.html" %}
+
+{% block content %}
+<table>
+    {% for track in tracks %}
+        <tr>
+            <td><a href="{{track.obj.uri}}">{{track.obj.title}}</a></td>
+            <td>{{track.obj.genre}}</td>
+            <!--{% for k, v in track.obj.items %}-->
+            <!--<td>{{v}}</td>-->
+            <!--{% endfor %}-->
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

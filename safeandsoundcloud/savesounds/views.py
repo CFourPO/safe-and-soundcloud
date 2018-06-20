@@ -13,11 +13,33 @@ def index(request):
     return render(request, 'savesounds/index.html', context)
 
 
+def home(request, username):
+    user = User.objects.get(username=username)
+    context = {'user': user}
+    return render(request, 'savesounds/home.html', context)
+
+
 def likes(request, username):
-    return HttpResponse("My Likes page!")
+    user = User.objects.get(username=username)
+    access_token = user.access_token
+    client = soundcloud.Client(access_token=access_token)
+
+    userId = client.get('/me').obj['id']
+    activities = client.get('/me/activities').obj
+    tracks = client.get(f'/users/{userId}/favorites')
+
+    # for track in tracks:
+    # for k, v in activities.items():
+    #     print(f'ACTIVITYYYYYYYYYYYYYYYYYYYYYYYY--------------------------{k}: {v}')
+    context = {'tracks': tracks}
+    return render(request, 'savesounds/likes.html', context)
 
 
-def reposts(request):
+def reposts(request, username):
+    user = User.objects.get(username=username)
+    access_token = user.access_token
+    client = soundcloud.Client(access_token=access_token)
+    activities = client.get('/me/activities').obj
     return HttpResponse("Things I have Reposted")
 
 
@@ -52,7 +74,4 @@ def auth_callback(request):
                     access_token=access_token_data['access_token'])
         user.save()
 
-    # for attr, value in access_token_data:
-    #     print(f'{attr}: {value}')
-
-    return HttpResponse(str(user))
+    return HttpResponseRedirect(f'/home/{user.username}')
