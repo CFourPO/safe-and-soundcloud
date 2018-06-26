@@ -5,16 +5,18 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
 
-    path('home/<username>/', views.home, name='home'),
+    path('home/', views.HomeView.as_view(), name='home'),
 
     # /likes
-    path('likes/<username>/', views.likes, name='likes'),
+    path('likes/', views.likes, name='likes'),
 
     # /reposts
-    path('reposts/<username>/', views.reposts, name='reposts'),
+    path('reposts/', views.reposts, name='reposts'),
 
     # /login
-    path('login/', views.login, name='login'),
+    path('login/', views.custom_login, name='login'),
+
+    path('logout/', views.custom_logout, name='logout'),
 
     # /safe-and-soundcloud/callback.html
     path('safe-and-soundcloud/callback.html', views.auth_callback, name='callback'),

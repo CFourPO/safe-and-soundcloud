@@ -82,6 +82,8 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'savesounds.User'
+LOGIN_REDIRECT_URL = 'savesounds/index.html'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

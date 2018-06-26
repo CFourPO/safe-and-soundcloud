@@ -1,11 +1,19 @@
 import json
 
+from django.contrib.auth import login, logout
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.models import User
 import soundcloud
+from django.views import generic
 
 # Create your views here.
-from .models import AccessToken, User
+from django.views.generic import TemplateView
+from django.views.generic.base import View
+
+from .models import User
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -13,19 +21,32 @@ def index(request):
     return render(request, 'savesounds/index.html', context)
 
 
-def home(request, username):
-    user = User.objects.get(username=username)
+class HomeView(View):
+    template_name = "savesounds/home.html"
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect("/")
+        else:
+            return render(request, self.template_name, context=None)
+
+
+@login_required
+def home(request):
+    user = request.user
     context = {'user': user}
     return render(request, 'savesounds/home.html', context)
 
 
-def likes(request, username):
-    user = User.objects.get(username=username)
-    access_token = user.access_token
-    client = soundcloud.Client(access_token=access_token)
+@login_required
+def likes(request):
+    user = request.user
+    # user = User.objects.get(username=username)
+    # access_token = user.access_token
+    client = soundcloud.Client(access_token=user.access_token)
 
     userId = client.get('/me').obj['id']
-    activities = client.get('/me/activities').obj
+    # activities = client.get('/me/activities').obj
     tracks = client.get(f'/users/{userId}/favorites')
 
     # for track in tracks:
@@ -35,6 +56,7 @@ def likes(request, username):
     return render(request, 'savesounds/likes.html', context)
 
 
+@login_required
 def reposts(request, username):
     user = User.objects.get(username=username)
     access_token = user.access_token
@@ -43,7 +65,7 @@ def reposts(request, username):
     return HttpResponse("Things I have Reposted")
 
 
-def login(request):
+def custom_login(request):
     client = soundcloud.Client(
         client_id="1NPiMO4NA1swhQ0NVYdct6qT95r7w281",
         client_secret="0QRconN6Vf1vQJU52X1JElduUIIK9IvZ",
@@ -64,9 +86,15 @@ def auth_callback(request):
 
     try:
         user = User.objects.get(username=user_data['username'])
-        user.access_token = access_token_data['access_token']
-        user.save()
+        login(request, user)
+        if user.access_token is not None:
+            pass
+        else:
+            user.access_token = access_token_data['access_token']
+            user.save()
     except:
+        # user = User.objects.create_user(user_data['username'], , 'johnpassword')
+
         user = User(username=user_data['username'],
                     permalink=user_data['permalink'],
                     permalink_url=user_data['permalink_url'],
@@ -74,4 +102,27 @@ def auth_callback(request):
                     access_token=access_token_data['access_token'])
         user.save()
 
-    return HttpResponseRedirect(f'/home/{user.username}')
+    return HttpResponseRedirect(f'/home/')
+
+
+#
+# class CustomLoginView(LoginView):
+#     template_name = "savesounds/login.html"
+#
+#
+#
+# class LikesView(AccessMixin, generic.ListView):
+#
+#     template_name = "savesounds/likes.html"
+#     context_object_name = "tracks"
+#
+#     def get(self, request, *args, **kwargs):
+#         if request.user.is_authenticated:
+#
+#     def get_context_data(self, *, object_list=None, **kwargs):
+
+def custom_logout(request):
+    user = request.user
+    if user.is_authenticated:
+        logout(request)
+    return render(request, 'savesounds/login.html')

@@ -1,9 +1,9 @@
-{% extends "savesounds/__base.html" %}
+{% extends "registration/__base_generic.html" %}
 
 {% block content %}
 <h1>Welcome {{ user.username }}</h1>
 
 <img src="{{user.avatar_url}}"  alt="img">
-<a href="/likes/{{user.username}}">Likes</a>
+<a href="{% url 'likes'%}">Likes</a>
 <a href="/reposts">Reposts</a>
 {% endblock %}

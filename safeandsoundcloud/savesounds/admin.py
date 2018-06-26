@@ -1,6 +1,11 @@
 from django.contrib import admin
-from .models import User, AccessToken
+from djongo.admin import ModelAdmin
+
+from .models import User
 
 # Register your models here.
-admin.site.register(User)
-admin.site.register(AccessToken)
+class CustomUserAdmin(ModelAdmin):
+    def get_by_natural_key(username):
+        return User.objects.get(username=username)
+
+admin.site.register(User, CustomUserAdmin)
