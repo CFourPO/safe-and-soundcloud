@@ -21,14 +21,20 @@ def index(request):
     return render(request, 'savesounds/index.html', context)
 
 
-class HomeView(View):
+class HomeView(TemplateView):
     template_name = "savesounds/home.html"
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return HttpResponseRedirect("/")
         else:
-            return render(request, self.template_name, context=None)
+            return render(request, self.template_name, context=self.get_context_data(access_token=request.user.access_token))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        client = soundcloud.Client(access_token=kwargs['access_token'])
+        context['user_data'] = client.get('/me').obj
+        return context
 
 
 @login_required

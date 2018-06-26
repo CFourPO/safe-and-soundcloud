@@ -1,6 +1,8 @@
 {% extends "registration/__base_generic.html" %}
-{% block content %}
-<table>
+{% block likes %}
+<div class="w3-container">
+      <h5>Favorited Tracks</h5>
+        <table class="w3-table w3-striped w3-white">
     {% for track in tracks %}
         <tr>
             <td><a href="{{track.obj.uri}}">{{track.obj.title}}</a></td>
@@ -10,5 +12,6 @@
             <!--{% endfor %}-->
         </tr>
     {% endfor %}
-</table>
+    </table>
+</div>
 {% endblock %}
