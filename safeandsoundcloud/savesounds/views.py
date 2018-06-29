@@ -132,3 +132,7 @@ def custom_logout(request):
     if user.is_authenticated:
         logout(request)
     return render(request, 'savesounds/login.html')
+
+
+def debug():
+    return None
