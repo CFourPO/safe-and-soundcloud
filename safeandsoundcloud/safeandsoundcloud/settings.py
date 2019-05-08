@@ -124,3 +124,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = '/'
+
+SPOTIFY_CREDENTIAL = {
+    'CLIENT_ID': 'a7b5408c9a8d496d9b3d92bdfc1dc25b',
+    'CLIENT_SECRET': '939fc62afdbc4e77ac8612abc6ad1915'
+}

@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 import soundcloud
 from django.views import generic
 
+from spotify import backends
+
 # Create your views here.
 from django.views.generic import TemplateView
 from django.views.generic.base import View
@@ -50,6 +52,7 @@ def likes(request):
     # user = User.objects.get(username=username)
     # access_token = user.access_token
     client = soundcloud.Client(access_token=user.access_token)
+
 
     userId = client.get('/me').obj['id']
     # activities = client.get('/me/activities').obj
